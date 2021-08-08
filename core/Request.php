@@ -13,6 +13,9 @@ class Request {
 
     public function uri()
     {
-        return $_SERVER['REQUEST_URI'];
+        $uri = $_SERVER['REQUEST_URI'];
+        $uri = rtrim($uri, '/');
+        $uri = ltrim($uri, '/');
+        return $uri;
     }
 }

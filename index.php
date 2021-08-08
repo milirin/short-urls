@@ -4,20 +4,26 @@ require './controllers/User.php';
 
 $app = new Application();
 
-$app->router->get('/users', function (int $num1, int $num2)
+$app->router->get('/pages', function ()
 {
-    echo 'number1 - '.$num1.' number2 - '.$num2;
+    echo 'get pages';
 });
 
-$app->router->get('/urls', function (int $num1, int $num2)
+$app->router->get('/users', function ()
 {
-    echo 'gjgfgfgf - '.$num1.' gfgfgfgfgfg - '.$num2;
+    echo 'get users';
 });
 
-$app->router->post('/users', function (int $num1, int $num2)
+$app->router->get('/urls', function ()
 {
-    echo '111111 - '.$num1.' 1111111 - '.$num2;
+    echo 'get urls';
 });
 
-// TODO: сделать чтобы определенная функция запускалась на определенной странице 
+$app->router->post('/users', function ()
+{
+    echo 'post users';
+});
+
+$app->run();
+// TODO: сделать с id  /pages/:id
 // $app->router->get('/users', [User::class, 'getAll']);
