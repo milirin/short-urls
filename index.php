@@ -14,6 +14,11 @@ $app->router->get('/users', function ()
     echo 'get users';
 });
 
+$app->router->get('/users/:id', function (int $id)
+{
+    echo 'user by id '.$id;
+});
+
 $app->router->get('/urls', function ()
 {
     echo 'get urls';

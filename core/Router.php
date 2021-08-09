@@ -21,7 +21,17 @@ class Router
     {
         $endPoint = ltrim($endPoint, '/');
         $endPoint = rtrim($endPoint, '/');
-        $this->routes[$method][$endPoint]['callback'] = $callback;
+        $params = [];
+        $explEndPoint = explode('/', $endPoint);
+        $uriChunks = $this->request->uriChunks();
+
+        foreach ($explEndPoint as $key => $chunk) {
+            if (str_starts_with($chunk, ':')) {
+                $params[] = $uriChunks[$key];
+            }
+        }
+
+        $this->routes[$method][$endPoint] = ['callback' => $callback, 'params' => $params];
     }
 
     public function get(string $endPoint, callable $callback)
@@ -51,10 +61,20 @@ class Router
 
     public function resolve(): void
     {
-        $uri = $this->request->uri();
         $method = $this->request->method();
-        if (array_key_exists($uri, $this->routes[$method])) {
-            call_user_func($this->routes[$method][$uri]['callback']);
+        $methodRoutes = $this->routes[$method];
+        $route = [];
+
+        foreach ($methodRoutes as $key => $routeValue) {
+            $explRoute = explode('/', $key);
+            if ($explRoute[0] === $this->request->uriChunks()[0] && count($explRoute) === count($this->request->uriChunks())) {
+                $route = $routeValue;
+                break;
+            }
+        }
+
+        if (count($route)) {
+            call_user_func_array($route['callback'], $route['params']);
         } else {
             header("HTTP/1.1 404 Page Not Found");
         }

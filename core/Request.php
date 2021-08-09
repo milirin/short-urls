@@ -11,11 +11,22 @@ class Request {
         return strtolower($_SERVER['REQUEST_METHOD']);
     }
 
-    public function uri()
+    public function trimString(string $string, string $separator): string
     {
-        $uri = $_SERVER['REQUEST_URI'];
-        $uri = rtrim($uri, '/');
-        $uri = ltrim($uri, '/');
+        $result = rtrim($string, $separator);
+        $result = ltrim($string, $separator);
+        return $result;
+    }
+
+    public function uri(): string 
+    {
+        $uri = $this->trimString($_SERVER['REQUEST_URI'], '/');
         return $uri;
+    }   
+
+    public function uriChunks(): array
+    {
+        $uri = $this->trimString($_SERVER['REQUEST_URI'], '/');
+        return explode('/', $uri);
     }
 }
