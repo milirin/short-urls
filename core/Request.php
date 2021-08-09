@@ -14,7 +14,7 @@ class Request {
     public function trimString(string $string, string $separator): string
     {
         $result = rtrim($string, $separator);
-        $result = ltrim($string, $separator);
+        $result = ltrim($result, $separator);
         return $result;
     }
 
