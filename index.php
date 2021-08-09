@@ -9,10 +9,7 @@ $app->router->get('/pages', function ()
     echo 'get pages';
 });
 
-$app->router->get('/users', function ()
-{
-    echo 'get users';
-});
+$app->router->get('/users', [User::class, 'getAll']);
 
 $app->router->get('/users/:id', function (int $id)
 {
