@@ -1,8 +1,8 @@
 <?php 
 
 class User {
-    public function getAll()
+    public function getAll(Request $request)
     {
-        echo 'AllUsers';
+        echo $request->data['name'];
     }
 }

@@ -1,9 +1,16 @@
 <?php
 
 class Request { 
+    public array $data = [];
+
     public function __construct()
     {
         
+    }
+
+    public function storeData(array $data)
+    {
+        $this->data = array_merge();
     }
 
     public function method()
