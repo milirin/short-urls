@@ -4,6 +4,7 @@ class Model
 {
     protected PDO $db;
     protected string $tableName;
+    protected array $data = [];
 
     public function __construct()
     {
@@ -14,6 +15,11 @@ class Model
         } else {
             $this->tableName = strtolower(get_called_class()) . 's';
         }
+    }
+
+    public function __set(string $name, mixed $value): void
+    {
+        $this->data[$name] = $value;
     }
 
     public function findAll(): array
@@ -34,10 +40,23 @@ class Model
 
     public function store()
     {
-        $request = $this->db->prepare("INSERT INTO $this->tableName (`login`, `email`, `password`) VALUES ('{$this->login}', '{$this->email}', '{$this->password}')");
-        $request->execute();
+        $dataKeys = array_keys($this->data);
+        $dataKeysColon = [];
 
-        return $this->findAll();
+        foreach ($dataKeys as $key) { 
+            $dataKeysColon[] = ":$key";
+        }
+
+        $columns = implode(',', $dataKeys);
+        $values = implode(',', $dataKeysColon);
+
+        $request = $this->db->prepare("INSERT INTO $this->tableName ($columns) VALUES ($values)");
+
+        foreach ($this->data as $key => $value) {
+            $request->bindValue($key, $value);
+        }
+
+        return $request->execute();
     }
 
     public function delete(int $id)

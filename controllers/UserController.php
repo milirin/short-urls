@@ -22,17 +22,18 @@ class UserController {
     }
 
     public function create(Request $request, Response $response)
-    {
-        
+    {  
         $user = new User();
 
         $user->login = $request->data['login'];
         $user->email = $request->data['email'];
-        $user->password = $request->data['password'];
+        $user->password = password_hash($request->data['password'], PASSWORD_DEFAULT);
 
-        $users = $user->store();
-
-        return $response->json($users, 200);
+        if ($user->store()) {
+            return $response->json(['message' => "user $user->login created"], 200);
+        } else {
+            return $response->json(['message' => 'bad request'], 400);
+        }
     }
 
     public function remove(Request $request, Response $response)
