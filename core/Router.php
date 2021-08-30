@@ -1,9 +1,11 @@
 <?php
 require './core/Request.php';
+require './core/Response.php';
 
 class Router
 {
     private Request $request;
+    private Response $response;
     private array $routes = [
         "get" => [],
         "post" => [],
@@ -15,6 +17,7 @@ class Router
     public function __construct()
     {
         $this->request = new Request;
+        $this->response = new Response;
     }
 
     public function storeRoute(string $method, string $endPoint, callable|array $callback)
@@ -27,7 +30,8 @@ class Router
 
         foreach ($explEndPoint as $key => $chunk) {
             if (str_starts_with($chunk, ':')) {
-                $params[] = $uriChunks[$key];
+                $chunk = str_replace(':', '', $chunk);
+                $params[$chunk] = $uriChunks[$key];
             }
         }
 
@@ -81,7 +85,7 @@ class Router
                 $method = $route['callback'][1];
                 if (method_exists($object, $method)) {
                     $this->request->storeData($route['params']);
-                    $object->$method($this->request);
+                    $object->$method($this->request, $this->response);
                 } else {
                     header("HTTP/1.1 404 Page Not Found");
                 }

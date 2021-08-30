@@ -10,7 +10,14 @@ class Request {
 
     public function storeData(array $data)
     {
-        $this->data = array_merge();
+        $content = file_get_contents('php://input');
+        $decoded_content = json_decode($content);
+        
+        if (!is_array($decoded_content)) {
+            $decoded_content = [];
+        }
+
+        $this->data = array_merge($data, $_POST, $decoded_content);
     }
 
     public function method()
