@@ -5,9 +5,14 @@ class Model
     protected PDO $db;
     protected string $tableName;
     protected array $data = [];
+    protected string $customIdName = 'id';
 
     public function __construct()
     {
+        if ($this->idName) {
+            $this->customIdName = $this->idName;
+        }
+
         $this->db = (new Database())->pdo;
 
         if ($this->table) {
@@ -22,6 +27,14 @@ class Model
         $this->data[$name] = $value;
     }
 
+    public function __get(string $name): mixed
+    {
+        if (array_key_exists($name, $this->data)) {
+            return $this->data[$name];
+        }
+        return null;
+    }
+
     public function findAll(): array
     {
         $request = $this->db->prepare("SELECT * FROM $this->tableName");
@@ -32,11 +45,16 @@ class Model
 
     public static function findById(int $id)
     {
-        $class = new self;
-        $request = $class->db->prepare("SELECT * FROM $class->tableName WHERE id = $id");
-        $request->execute();
+        $className = get_called_class();
+        $class = new $className;
+        $request = $class->db->prepare("SELECT * FROM $class->tableName WHERE $class->customIdName = $id");
+        if ($request->execute()) {
+            $object = $request->fetchObject($className);
 
-        return $request->fetchAll(PDO::FETCH_ASSOC);
+            return $object;
+        } else {
+            return false;
+        }
     }
 
     public function store()
@@ -44,7 +62,7 @@ class Model
         $dataKeys = array_keys($this->data);
         $dataKeysColon = [];
 
-        foreach ($dataKeys as $key) { 
+        foreach ($dataKeys as $key) {
             $dataKeysColon[] = ":$key";
         }
 
@@ -60,11 +78,11 @@ class Model
         return $request->execute();
     }
 
-    public function delete(int $id)
+    public function delete(): bool
     {
-        $request = $this->db->prepare("DELETE FROM $this->tableName WHERE id = $id");
-        $request->execute();
-
-        return $this->findAll();
+        $customIdName = $this->customIdName;
+        $request = $this->db->prepare("DELETE FROM $this->tableName WHERE $this->customIdName = $this->$customIdName");
+        
+        return $request->execute();
     }
 }
