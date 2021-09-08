@@ -14,7 +14,7 @@ $app->router->get('/users', [UserController::class, 'getAll']);
 
 $app->router->get('/users/:id', [UserController::class, 'getById']);
 
-$app->router->get('/users/:id/remove', [UserController::class, 'remove']);
+$app->router->delete('/users/:id', [UserController::class, 'remove']);
 
 $app->router->post('/users/create', [UserController::class, 'create']);
 

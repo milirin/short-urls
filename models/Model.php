@@ -30,9 +30,10 @@ class Model
         return $request->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function findById(int $id)
+    public static function findById(int $id)
     {
-        $request = $this->db->prepare("SELECT * FROM $this->tableName WHERE id = $id");
+        $class = new self;
+        $request = $class->db->prepare("SELECT * FROM $class->tableName WHERE id = $id");
         $request->execute();
 
         return $request->fetchAll(PDO::FETCH_ASSOC);

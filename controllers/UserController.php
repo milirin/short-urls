@@ -15,10 +15,9 @@ class UserController {
 
     public function getById(Request $request, Response $response)
     {
-        $user = new User();
-        $users = $user->findById($request->uriChunks()[1]);
+        $user = User::findById($request->uriChunks()[1]);
 
-        return $response->json($users, 200);
+        return $response->json($user, 200);
     }
 
     public function create(Request $request, Response $response)
@@ -38,8 +37,8 @@ class UserController {
 
     public function remove(Request $request, Response $response)
     {
-        $user = new User();
-        $users = $user->delete($request->uriChunks()[1]);
+        $user = User::findById($request->uriChunks()[1]);
+        $user->delete();
 
         return $response->json($users, 200);
     }
