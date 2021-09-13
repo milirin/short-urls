@@ -55,13 +55,15 @@ class UserController
     {
         $user = User::findById($request->data['id']);
         $isSuccess = $user->update($request->data);
-        "UPDATE users SET columnName='value', columnName='value' WHERE id=2"
 
-        if ($isSuccess) {
-
+        if ($user) {
+            if ($isSuccess) {
+                return $response->json(['message' => 'User updated'], 200);
+            } else {
+                return $response->json(['message' => 'Unable to update'], 403);
+            }
         } else {
-
+            return $response->json(['message' => 'User not found'], 404);
         }
-        
     }
 }

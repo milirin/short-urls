@@ -82,7 +82,34 @@ class Model
     {
         $customIdName = $this->customIdName;
         $request = $this->db->prepare("DELETE FROM $this->tableName WHERE $this->customIdName = $this->$customIdName");
-        
+
+        return $request->execute();
+    }
+
+    public function update($data): bool
+    {
+        $customIdName = $this->customIdName;
+        unset($data['id']);
+        $dataKeys = array_keys($data);
+        $dataKeysColon = [];
+
+        foreach ($dataKeys as $key) {
+            $dataKeysColon[] = ":$key";
+        }
+
+        $columnsAndValues = [];
+        foreach ($dataKeys as $key => $value) {
+            $columnsAndValues[] = $value . '=' . $dataKeysColon[$key];
+        }
+
+        $columnsAndValues = implode(',', $columnsAndValues);
+
+        $request = $this->db->prepare("UPDATE $this->tableName SET $columnsAndValues WHERE $this->customIdName = $this->$customIdName");
+
+        foreach ($data as $key => $value) {
+            $request->bindValue($key, $value);
+        }
+
         return $request->execute();
     }
 }

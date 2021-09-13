@@ -11,7 +11,7 @@ class Request {
     public function storeData(array $data)
     {
         $content = file_get_contents('php://input');
-        $decoded_content = json_decode($content);
+        $decoded_content = json_decode($content, TRUE);
         
         if (!is_array($decoded_content)) {
             $decoded_content = [];
