@@ -86,29 +86,19 @@ class Model
         return $request->execute();
     }
 
-    public function update($data): bool
+    public function update(array $data): bool
     {
         $customIdName = $this->customIdName;
         unset($data['id']);
-        $dataKeys = array_keys($data);
-        $dataKeysColon = [];
+        $array_column_value = [];
 
-        foreach ($dataKeys as $key) {
-            $dataKeysColon[] = ":$key";
+        foreach ($data as $column => $value) {
+            $array_column_value[] = "$column='$value'";
         }
 
-        $columnsAndValues = [];
-        foreach ($dataKeys as $key => $value) {
-            $columnsAndValues[] = $value . '=' . $dataKeysColon[$key];
-        }
+        $columnsAndValues = implode(',', $array_column_value);
 
-        $columnsAndValues = implode(',', $columnsAndValues);
-
-        $request = $this->db->prepare("UPDATE $this->tableName SET $columnsAndValues WHERE $this->customIdName = $this->$customIdName");
-
-        foreach ($data as $key => $value) {
-            $request->bindValue($key, $value);
-        }
+        $request = $this->db->prepare("UPDATE $this->tableName SET $columnsAndValues WHERE $this->customIdName = {$this->$customIdName}");
 
         return $request->execute();
     }
