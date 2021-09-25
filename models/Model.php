@@ -2,16 +2,19 @@
 
 class Model
 {
-    protected PDO $db;
-    protected string $tableName;
-    protected array $data = [];
-    protected string $customIdName = 'id';
+    private PDO $db;
+    private string $tableName;
+    private array $data = [];
+    private string $customIdName = 'id';
+    private string $relationsColumnName;
 
     public function __construct()
     {
         if ($this->idName) {
             $this->customIdName = $this->idName;
         }
+
+        $this->relationsColumnName = strtolower(get_called_class()) . '_id';
 
         $this->db = (new Database())->pdo;
 
@@ -101,5 +104,33 @@ class Model
         $request = $this->db->prepare("UPDATE $this->tableName SET $columnsAndValues WHERE $this->customIdName = {$this->$customIdName}");
 
         return $request->execute();
+    }
+
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
+
+    public function get()
+    {
+        $request = $this->db->prepare($this->query);
+        $request->execute();
+
+        return $request->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function orderBy($columnName, $sortBy)
+    {
+        $this->query .= " ORDER BY $columnName $sortBy";
+
+        return $this;
+    }
+
+    public function hasMany(string $className)
+    {
+        $className = strtolower($className) . 's';
+        $this->query = "SELECT * FROM $className WHERE $this->relationsColumnName = $this->id";
+
+        return $this;
     }
 }

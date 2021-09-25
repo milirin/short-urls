@@ -18,7 +18,16 @@ class UserController
     {
         $user = User::findById($request->data['id']);
 
-        return $response->json($user, 200);
+        return $response->json(['user' => $user], 200);
+    }
+
+    public function getPosts(Request $request, Response $response)
+    {
+        $user = User::findById($request->data['id']);
+        $posts = $user->posts()->get();
+        // $posts = $user->posts()->orderBy('title', 'desc')->get();
+
+        return $response->json(['user' => $posts], 200);
     }
 
     public function create(Request $request, Response $response)
