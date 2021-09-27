@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 class Model
 {
@@ -7,6 +7,8 @@ class Model
     private array $data = [];
     private string $customIdName = 'id';
     private string $relationsColumnName;
+    private string $query;
+    private string | null $relationsKeyName = null;
 
     public function __construct()
     {
@@ -38,12 +40,24 @@ class Model
         return null;
     }
 
-    public function findAll(): array
+    public function getData()
     {
-        $request = $this->db->prepare("SELECT * FROM $this->tableName");
-        $request->execute();
+        return $this->data;
+    }
 
-        return $request->fetchAll(PDO::FETCH_ASSOC);
+    public function with(string $relationsClass)
+    {
+        $this->relationsKeyName = $relationsClass;
+        return $this->$relationsClass();
+    }
+
+    public static function findAll(): object
+    {
+        $className = get_called_class();
+        $class = new $className;
+        $class->query = "SELECT * FROM $class->tableName";
+
+        return $class;
     }
 
     public static function findById(int $id)
@@ -115,11 +129,28 @@ class Model
     {
         $request = $this->db->prepare($this->query);
         $request->execute();
-
-        return $request->fetchAll(PDO::FETCH_ASSOC);
+        $data = $request->fetchAll(PDO::FETCH_ASSOC);
+        if ($this->relationsKeyName) {
+            $key = $this->relationsKeyName;
+            $this->$key = $data;
+            return $this;
+        } else {
+            return $data;
+        }
     }
 
-    public function orderBy($columnName, $sortBy)
+    public function limit(int $from, int $number = null)
+    {
+        if ($number) {
+            $this->query .= " LIMIT $from, $number";
+        } else {
+            $this->query .= " LIMIT $from";
+        }
+
+        return $this;
+    }
+
+    public function orderBy(string $columnName, string $sortBy)
     {
         $this->query .= " ORDER BY $columnName $sortBy";
 
@@ -128,8 +159,20 @@ class Model
 
     public function hasMany(string $className)
     {
-        $className = strtolower($className) . 's';
-        $this->query = "SELECT * FROM $className WHERE $this->relationsColumnName = $this->id";
+        $object = new $className;
+        $tableName = $object->getTableName();
+        $idName = $this->customIdName;
+        $this->query = "SELECT * FROM $tableName WHERE $this->relationsColumnName = {$this->$idName}";
+
+        return $this;
+    }
+
+    public function hasOne(string $className)
+    {
+        $object = new $className;
+        $tableName = $object->getTableName();
+        $idName = $this->customIdName;
+        $this->query = "SELECT * FROM $tableName WHERE $idName = {$this->user_id}";
 
         return $this;
     }

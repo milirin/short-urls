@@ -26,6 +26,8 @@ $app->router->get('/users/:id/posts', [UserController::class, 'getPosts']);
 
 $app->router->get('/posts', [PostController::class, 'getAll']);
 
+$app->router->get('/posts/:id', [PostController::class, 'get']);
+
 $app->router->get('/urls', function ()
 {
     echo 'get urls';

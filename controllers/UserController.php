@@ -6,7 +6,7 @@ class UserController
     public function getAll(Request $request, Response $response)
     {
         $user = new User();
-        $users = $user->findAll();
+        $users = $user->findAll()->get();
 
         $name = $request->data['name'];
         $array = ['name' => $name, 'message' => "Welcome, $name", 'status' => 200];
@@ -16,7 +16,7 @@ class UserController
 
     public function getById(Request $request, Response $response)
     {
-        $user = User::findById($request->data['id']);
+        $user = User::findById($request->data['id'])->with('posts')->get();
 
         return $response->json(['user' => $user], 200);
     }
