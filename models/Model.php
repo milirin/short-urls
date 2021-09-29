@@ -172,7 +172,8 @@ class Model
         $object = new $className;
         $tableName = $object->getTableName();
         $idName = $this->customIdName;
-        $this->query = "SELECT * FROM $tableName WHERE $idName = {$this->user_id}";
+        $relationsColumnName = $object->relationsColumnName;
+        $this->query = "SELECT * FROM $tableName WHERE $idName = {$this->$relationsColumnName}";
 
         return $this;
     }
