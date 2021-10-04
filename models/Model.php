@@ -45,13 +45,13 @@ class Model
         return $this->data;
     }
 
-    public function with(string $relationsClass)
+    public function with(string $relationsClass): self
     {
         $this->relationsKeyName = $relationsClass;
         return $this->$relationsClass();
     }
 
-    public static function findAll(): object
+    public static function findAll(): self
     {
         $className = get_called_class();
         $class = new $className;
@@ -74,7 +74,7 @@ class Model
         }
     }
 
-    public function store()
+    public function store(): bool
     {
         $dataKeys = array_keys($this->data);
         $dataKeysColon = [];
@@ -139,7 +139,7 @@ class Model
         }
     }
 
-    public function limit(int $from, int $number = null)
+    public function limit(int $from, int $number = null): self
     {
         if ($number) {
             $this->query .= " LIMIT $from, $number";
@@ -150,14 +150,14 @@ class Model
         return $this;
     }
 
-    public function orderBy(string $columnName, string $sortBy)
+    public function orderBy(string $columnName, string $sortBy): self
     {
         $this->query .= " ORDER BY $columnName $sortBy";
 
         return $this;
     }
 
-    public function hasMany(string $className)
+    public function hasMany(string $className): self
     {
         $object = new $className;
         $tableName = $object->getTableName();
@@ -167,11 +167,11 @@ class Model
         return $this;
     }
 
-    public function hasOne(string $className)
+    public function hasOne(string $className): self
     {
         $object = new $className;
         $tableName = $object->getTableName();
-        $idName = $this->customIdName;
+        $idName = $object->customIdName;
         $relationsColumnName = $object->relationsColumnName;
         $this->query = "SELECT * FROM $tableName WHERE $idName = {$this->$relationsColumnName}";
 

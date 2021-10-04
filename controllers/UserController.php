@@ -27,7 +27,7 @@ class UserController
         $posts = $user->posts()->get();
         // $posts = $user->posts()->orderBy('title', 'desc')->get();
 
-        return $response->json(['user' => $posts], 200);
+        return $response->json(['posts' => $posts], 200);
     }
 
     public function create(Request $request, Response $response)

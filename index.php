@@ -2,6 +2,7 @@
 require './core/Application.php';
 require './database/Database.php';
 require './models/Model.php';
+require './authorization/Auth.php';
 require './controllers/UserController.php';
 require './controllers/PostController.php';
 
@@ -11,6 +12,8 @@ $app->router->get('/pages', function ()
 {
     echo 'get pages';
 });
+
+$app->router->post('/sign-up', [Auth::class, 'registration']);
 
 $app->router->get('/users', [UserController::class, 'getAll']);
 
